@@ -21,5 +21,11 @@ wget --no-check-certificate https://raw.github.com/mitchellh/vagrant/master/keys
 chmod 600 ${SSH_KEY}
 chown -R ${USER} ${SSH_DIR}
 
-ln -sf /dev/null /etc/systemd/network/99-default.link;
-update-initramfs -u
+# Configure ifplugd to monitor the eth0 interface.
+sed -i -e 's/INTERFACES=.*/INTERFACES="eth0"/g' /etc/default/ifplugd
+
+# Ensure the networking interfaces get configured on boot.
+systemctl enable systemd-networkd.service
+
+# Ensure ifplugd also gets started, so the ethernet interface is monitored.
+systemctl enable ifplugd.service
