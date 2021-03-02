@@ -10,7 +10,6 @@ SUDO_FILE=/etc/sudoers.d/${USER}
 
 # sudo file
 echo 'vagrant ALL=(ALL) NOPASSWD:ALL' > ${SUDO_FILE}
-echo "Defaults:${USER} !requiretty" >> ${SUDO_FILE}
 chmod 440 ${SUDO_FILE}
 
 # ssh dir
@@ -22,6 +21,7 @@ wget --no-check-certificate https://raw.github.com/mitchellh/vagrant/master/keys
 chmod 600 ${SSH_KEY}
 chown -R ${USER} ${SSH_DIR}
 
+# networking: automatically get ips with new nics, based on mac
 cat <<-EOF > /etc/netplan/01-netcfg.yaml
 network:
   version: 2
@@ -31,9 +31,14 @@ network:
       dhcp-identifier: mac
 EOF
 
-sed -i 's/^#*\(send dhcp-client-identifier\).*$/\1 = hardware;/' /etc/dhcp/dhclient.conf
-sed -ie 's/GRUB_CMDLINE_LINUX=.*/GRUB_CMDLINE_LINUX="net.ifnames=0 ipv6.disable=1 biosdevname=0"/' /etc/default/grub
+# Apply the network plan configuration.
+netplan generate
 
+# setup the hardware dhcp
+sed -i 's/^#*\(send dhcp-client-identifier\).*$/\1 = hardware;/' /etc/dhcp/dhclient.conf
+
+# update grub to see eth0 interfaces
+sed -ie 's/GRUB_CMDLINE_LINUX=.*/GRUB_CMDLINE_LINUX="net.ifnames=0 ipv6.disable=1 biosdevname=0"/' /etc/default/grub
 update-grub2
 
 # Configure ifplugd to monitor the eth0 interface.
