@@ -33,7 +33,8 @@ EOF
 
 sed -i 's/^#*\(send dhcp-client-identifier\).*$/\1 = hardware;/' /etc/dhcp/dhclient.conf
 sed -ie 's/GRUB_CMDLINE_LINUX=.*/GRUB_CMDLINE_LINUX="net.ifnames=0 ipv6.disable=1 biosdevname=0"/' /etc/default/grub
-retry apt-get --assume-yes install ifplugd
+
+update-grub2
 
 # Configure ifplugd to monitor the eth0 interface.
 sed -i -e 's/INTERFACES=.*/INTERFACES="eth0"/g' /etc/default/ifplugd
