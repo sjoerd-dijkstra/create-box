@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-sudo cp "/var/lib/libvirt/images/${1}.img" box.img
-sudo virt-sparsify --in-place box.img
-sudo tar cf - box.img metadata.json Vagrantfile | pigz > "${1}.box"
-sudo chmod 644 "${1}.box"
-rm box.img
+qemu-img convert -c -O qcow2 /var/lib/libvirt/images/vagrant.img box.img
+tar cf - box.img metadata.json Vagrantfile | pigz > vagrant.box
+chmod 644 vagrant.box
