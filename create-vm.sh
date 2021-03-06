@@ -12,7 +12,7 @@ qemu-img create -f qcow2 -o preallocation=metadata "${DISK}" 128G
 
 # install the os
 virt-install \
- --name vagrant \
+ --name ${NAME} \
  --ram 16384 \
  --vcpus 8 \
  --machine q35 \
@@ -28,7 +28,6 @@ virt-install \
  --extra-args "auto=true hostname=vagrant domain=${DOMAIN} console=tty0 console=ttyS0,115200n8 serial"
 
 # wait till installation finished
-sleep 10
 while [ "$(virsh list | grep -c ${NAME})" != "0" ];
 do
   sleep 5
