@@ -1,14 +1,19 @@
 #!/usr/bin/env bash
 
-DISK=/var/lib/libvirt/images/vagrant.img
+set -ex
 
+NAME=vagrant-auto-install
+DISK=/var/lib/libvirt/images/${NAME}.img
+
+# create image disk file
 qemu-img create -f qcow2 -o preallocation=metadata "${DISK}" 128G
 
+# install the os
 virt-install \
  --name vagrant \
  --ram 16384 \
- --machine q35 \
  --vcpus 8 \
+ --machine q35 \
  --boot uefi \
  --noautoconsole \
  --disk path="${DISK}",bus=virtio,cache=none \
@@ -19,3 +24,18 @@ virt-install \
  --location http://ftp.ubuntu.com/ubuntu/dists/focal/main/installer-amd64 \
  --graphics none \
  --extra-args "auto=true hostname=vagrant domain=${DOMAIN} console=tty0 console=ttyS0,115200n8 serial"
+
+# wait till installation finished
+while [ "$(virsh list | grep -c ${NAME})" != "0" ];
+do
+  sleep 5
+done
+
+# create the box
+qemu-img convert -c -O qcow2 ${DISK} box.img
+tar cf - box.img metadata.json Vagrantfile | pigz > vagrant.box
+chmod 644 vagrant.box
+
+# clean up
+virsh undefine --nvram ${NAME}
+rm box.img ${DISK}
