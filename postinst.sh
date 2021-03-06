@@ -40,12 +40,3 @@ sed -i 's/^#*\(send dhcp-client-identifier\).*$/\1 = hardware;/' /etc/dhcp/dhcli
 # update grub to see eth0 interfaces
 sed -ie 's/GRUB_CMDLINE_LINUX=.*/GRUB_CMDLINE_LINUX="net.ifnames=0 ipv6.disable=1 biosdevname=0"/' /etc/default/grub
 update-grub2
-
-# Configure ifplugd to monitor the eth0 interface.
-sed -i -e 's/INTERFACES=.*/INTERFACES="eth0"/g' /etc/default/ifplugd
-
-# Ensure the networking interfaces get configured on boot.
-systemctl enable systemd-networkd.service
-
-# Ensure ifplugd also gets started, so the ethernet interface is monitored.
-systemctl enable ifplugd.service
