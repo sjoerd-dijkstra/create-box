@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-set -ex
+set -e
+
+[[ -n ${DEBUG_SCRIPT} ]] && set -x
 
 NAME=vagrant-auto-install
 DISK=/var/lib/libvirt/images/${NAME}.img
@@ -26,6 +28,7 @@ virt-install \
  --extra-args "auto=true hostname=vagrant domain=${DOMAIN} console=tty0 console=ttyS0,115200n8 serial"
 
 # wait till installation finished
+sleep 10
 while [ "$(virsh list | grep -c ${NAME})" != "0" ];
 do
   sleep 5
