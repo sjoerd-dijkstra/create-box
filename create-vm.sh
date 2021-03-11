@@ -28,14 +28,14 @@ virt-install \
  --extra-args "auto=true hostname=vagrant domain=${DOMAIN} console=tty0 console=ttyS0,115200n8 serial"
 
 # wait till installation finished
-while [ "$(virsh list | grep -c ${NAME})" != "0" ];
+while [ "$(virsh list | grep -c ${NAME})" != "0" ]
 do
   sleep 5
 done
 
 # create the box
-qemu-img convert -c -O qcow2 ${DISK} box.img
-tar cf - box.img metadata.json Vagrantfile | pigz > vagrant.box
+qemu-img convert -m 12 -p -c -O qcow2 ${DISK} box.img
+tar cf - box.img metadata.json Vagrantfile | pigz > ${NAME}.box
 chmod 644 vagrant.box
 
 # clean up
