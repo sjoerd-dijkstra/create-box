@@ -21,12 +21,6 @@ wget --no-check-certificate https://raw.github.com/mitchellh/vagrant/master/keys
 chmod 600 ${SSH_KEY}
 chown -R ${USER} ${SSH_DIR}
 
-# Disable IPv6 for the current boot.
-sysctl net.ipv6.conf.all.disable_ipv6=1
-
-# Ensure IPv6 stays disabled.
-printf "\nnet.ipv6.conf.all.disable_ipv6 = 1\n" >> /etc/sysctl.conf
-
 # networking: automatically get ips with new nics, based on mac
 cat <<-EOF > /etc/netplan/01-netcfg.yaml
 network:
@@ -46,9 +40,6 @@ sed -i 's/^#*\(send dhcp-client-identifier\).*$/\1 = hardware;/' /etc/dhcp/dhcli
 # update grub to see eth0 interfaces
 sed -ie 's/GRUB_CMDLINE_LINUX=.*/GRUB_CMDLINE_LINUX="net.ifnames=0 ipv6.disable=1 biosdevname=0"/' /etc/default/grub
 update-grub2
-
-# Install ifplugd so we can monitor and auto-configure nics.
-apt --assume-yes install ifplugd
 
 # Configure ifplugd to monitor the eth0 interface.
 sed -i -e 's/INTERFACES=.*/INTERFACES="eth0"/g' /etc/default/ifplugd
