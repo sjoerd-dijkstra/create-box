@@ -22,8 +22,8 @@ virt-install \
  --initrd-inject preseed.cfg \
  --initrd-inject postinst.sh \
  --os-type linux \
- --os-variant ubuntu20.04 \
- --location http://ftp.ubuntu.com/ubuntu/dists/focal/main/installer-amd64 \
+ --os-variant ubuntu22.04 \
+ --location http://ftp.ubuntu.com/ubuntu/dists/jammy/main/installer-amd64 \
  --graphics none \
  --extra-args "auto=true hostname=vagrant domain=${DOMAIN} console=tty0 console=ttyS0,115200n8 serial"
 
